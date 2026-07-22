@@ -16,6 +16,15 @@ const member=require("./utils/memberId");
 
 const backup=require("./utils/backup");
 
+const commandHandler =
+require("./handlers/command");
+
+const messageHandler =
+require("./handlers/message");
+
+const callbackHandler =
+require("./handlers/callback");
+
 const {
 isOwner
 }=require("./config/owner");
@@ -29,6 +38,11 @@ const bot=new Telegraf(
 process.env.BOT_TOKEN
 );
 
+commandHandler(bot);
+
+messageHandler(bot);
+
+callbackHandler(bot);
 
 
 let session={};
