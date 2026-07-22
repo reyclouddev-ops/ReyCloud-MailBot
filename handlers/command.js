@@ -18,6 +18,10 @@ require("../utils/backup");
 
 
 
+const checkCooldown =
+require("../utils/cooldown");
+
+
 module.exports=(bot,session)=>{
 
 
