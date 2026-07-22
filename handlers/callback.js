@@ -1,32 +1,57 @@
 const {
-    Markup
-} = require("telegraf");
+Markup
+}=require("telegraf");
+
 
 const {
 saveSession
 }=require("../database/session");
 
-const session = require("../database/session");
 
 
-const register = require("../templates/register");
-const invoice = require("../templates/invoice");
-
-const sendMail = require("../utils/mailer");
-
-const generateMember = require("../utils/memberId");
+module.exports=(bot,session)=>{
 
 
 
-module.exports = (bot)=>{
+// tombol menu send mail
+
+bot.action(
+"sendmail",
+async(ctx)=>{
 
 
-// BUTTON REGISTER
+session[ctx.from.id]={
 
-bot.action("register", async(ctx)=>{
+step:"email",
+
+template:""
+
+};
 
 
-let data=session[ctx.from.id];
+saveSession(session);
+
+
+
+ctx.reply(
+"📩 Masukkan email penerima:"
+);
+
+
+});
+
+
+
+
+// pilih register
+
+bot.action(
+"register",
+async(ctx)=>{
+
+
+let data =
+session[ctx.from.id];
 
 
 if(!data)
@@ -40,13 +65,14 @@ data.template="register";
 
 data.step="nama";
 
-saveSession(session);    
+
+saveSession(session);
 
 
-await ctx.reply(
+
+ctx.reply(
 "👤 Masukkan Nama Lengkap:"
 );
-
 
 
 });
@@ -55,12 +81,16 @@ await ctx.reply(
 
 
 
-// BUTTON INVOICE
 
-bot.action("invoice", async(ctx)=>{
+// pilih invoice
+
+bot.action(
+"invoice",
+async(ctx)=>{
 
 
-let data=session[ctx.from.id];
+let data =
+session[ctx.from.id];
 
 
 if(!data)
@@ -74,14 +104,14 @@ data.template="invoice";
 
 data.step="nama";
 
-saveSession(session);  
+
+saveSession(session);
 
 
 
-await ctx.reply(
+ctx.reply(
 "👤 Masukkan Nama Pelanggan:"
 );
-
 
 
 });
