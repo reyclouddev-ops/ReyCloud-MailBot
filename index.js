@@ -16,11 +16,16 @@ const member=require("./utils/memberId");
 
 const backup=require("./utils/backup");
 
-const messageHandler =
-require("./handlers/message");
+const commandHandler =
+require("./handlers/command");
+
 
 const callbackHandler =
 require("./handlers/callback");
+
+
+const messageHandler =
+require("./handlers/message");
 
 const {
 isOwner
@@ -35,15 +40,22 @@ const bot=new Telegraf(
 process.env.BOT_TOKEN
 );
 
-commandHandler(bot);
+commandHandler(
+bot,
+session
+);
+
+
+callbackHandler(
+bot,
+session
+);
+
 
 messageHandler(
 bot,
 session
 );
-
-callbackHandler(bot);
-
 
 const {
 loadSession,
