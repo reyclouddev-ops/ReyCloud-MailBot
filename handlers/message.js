@@ -15,11 +15,79 @@ const invoice =
 require("../templates/invoice");
 
 
-
 module.exports = (bot, session)=>{
 
 
 bot.on("text", async(ctx)=>{
+
+
+let data = session[ctx.from.id];
+
+
+if(!data)
+return;
+
+
+
+let text = ctx.message.text;
+
+
+// =====================
+// INPUT EMAIL PENERIMA
+// =====================
+
+if(data.step === "email"){
+
+
+const emailCheck =
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+
+if(!emailCheck.test(text)){
+
+
+return ctx.reply(
+"❌ Email tidak valid\nContoh: user@gmail.com"
+);
+
+
+}
+
+
+
+data.email = text;
+
+data.step = "template";
+
+
+saveSession(session);
+
+
+
+return ctx.reply(
+"📄 Pilih Template Email:",
+Markup.inlineKeyboard([
+
+[
+Markup.button.callback(
+"🎉 Register",
+"register"
+),
+
+Markup.button.callback(
+"🧾 Invoice",
+"invoice"
+)
+
+]
+
+])
+
+);
+
+
+}
 
 
 let data =
