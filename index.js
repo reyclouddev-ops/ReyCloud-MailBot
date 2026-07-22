@@ -45,7 +45,14 @@ messageHandler(bot);
 callbackHandler(bot);
 
 
-let session={};
+const {
+loadSession,
+saveSession
+}=require("./database/session");
+
+
+let session =
+loadSession();
 
 
 
