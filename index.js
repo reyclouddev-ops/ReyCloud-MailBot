@@ -16,9 +16,6 @@ const member=require("./utils/memberId");
 
 const backup=require("./utils/backup");
 
-const commandHandler =
-require("./handlers/command");
-
 const messageHandler =
 require("./handlers/message");
 
@@ -40,7 +37,10 @@ process.env.BOT_TOKEN
 
 commandHandler(bot);
 
-messageHandler(bot);
+messageHandler(
+bot,
+session
+);
 
 callbackHandler(bot);
 
