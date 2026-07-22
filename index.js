@@ -75,10 +75,13 @@ return ctx.reply("❌ Access Denied");
 
 
 session[ctx.from.id]={
-
-step:"email"
-
+step:"email",
+email:"",
+template:""
 };
+
+
+saveSession(session);
 
 
 ctx.reply(
