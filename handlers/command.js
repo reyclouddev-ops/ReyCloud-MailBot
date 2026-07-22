@@ -21,7 +21,6 @@ require("../templates/invoice");
 
 
 
-
 // validasi email
 
 function isEmail(email){
@@ -35,6 +34,72 @@ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 module.exports=(bot,session)=>{
 
 
+
+// =======================
+// START COMMAND
+// =======================
+
+bot.start(async(ctx)=>{
+
+
+let username =
+ctx.from.username
+? "@"+ctx.from.username
+: ctx.from.first_name;
+
+
+
+await ctx.replyWithVideo(
+
+{
+source:"./media/welcome.mp4"
+},
+
+{
+caption:
+`Hallo ${username} 👋
+
+Selamat datang di bot Sender PT Legion
+
+
+🤖 Name Bot :
+SenderBotMain
+
+📌 Version :
+2.0
+
+👨‍💻 Developer :
+@ReyCloudShop
+
+
+📋 Command :
+
+/sendmail
+Kirim email template
+
+
+/backup
+Backup data
+
+
+© PT Legion Teknologi 2026
+`
+}
+
+);
+
+
+});
+
+
+
+
+
+// =======================
+// HANDLE TEXT
+// =======================
+
+
 bot.on("text", async(ctx)=>{
 
 
@@ -42,7 +107,7 @@ let data =
 session[ctx.from.id];
 
 
-// tidak ada session
+// kalau tidak ada session
 if(!data)
 return;
 
@@ -54,7 +119,7 @@ ctx.message.text;
 
 
 // =======================
-// STEP EMAIL PENERIMA
+// EMAIL PENERIMA
 // =======================
 
 
@@ -111,16 +176,15 @@ Markup.button.callback(
 
 
 
+
 // =======================
-// TEMPLATE REGISTER
+// REGISTER TEMPLATE
 // =======================
 
 
 if(data.template==="register"){
 
 
-
-// nama
 
 if(data.step==="nama"){
 
@@ -133,6 +197,7 @@ data.step="role";
 saveSession(session);
 
 
+
 return ctx.reply(
 "🏷 Masukkan Role / Jabatan:"
 );
@@ -143,7 +208,6 @@ return ctx.reply(
 
 
 
-// role
 
 if(data.step==="role"){
 
@@ -156,6 +220,7 @@ data.step="wa";
 saveSession(session);
 
 
+
 return ctx.reply(
 "📱 Masukkan WhatsApp:"
 );
@@ -166,7 +231,6 @@ return ctx.reply(
 
 
 
-// whatsapp
 
 if(data.step==="wa"){
 
@@ -178,7 +242,8 @@ data.member =
 "LEGION-"+Date.now();
 
 
-data.status="ACTIVE";
+data.status =
+"ACTIVE";
 
 
 data.date =
@@ -206,7 +271,8 @@ ctx.reply(
 
 📩 ${data.email}
 
-🆔 ${data.member}`
+🆔 Member ID:
+${data.member}`
 );
 
 
@@ -233,15 +299,13 @@ return;
 
 
 // =======================
-// TEMPLATE INVOICE
+// INVOICE TEMPLATE
 // =======================
 
 
 if(data.template==="invoice"){
 
 
-
-// nama pelanggan
 
 if(data.step==="nama"){
 
@@ -265,7 +329,6 @@ return ctx.reply(
 
 
 
-// produk
 
 if(data.step==="produk"){
 
@@ -289,7 +352,6 @@ return ctx.reply(
 
 
 
-// harga
 
 if(data.step==="harga"){
 
@@ -314,8 +376,6 @@ return ctx.reply(
 
 
 
-// metode
-
 if(data.step==="metode"){
 
 
@@ -338,8 +398,6 @@ return ctx.reply(
 
 
 
-
-// status
 
 if(data.step==="status"){
 
