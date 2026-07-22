@@ -1,11 +1,6 @@
 const {
-Markup
-}=require("telegraf");
-
-
-const {
-saveSession
-}=require("../database/session");
+    saveSession
+} = require("../database/session");
 
 
 
@@ -13,7 +8,10 @@ module.exports=(bot,session)=>{
 
 
 
-// tombol menu send mail
+// =======================
+// BUTTON SEND MAIL
+// =======================
+
 
 bot.action(
 "sendmail",
@@ -33,6 +31,10 @@ saveSession(session);
 
 
 
+await ctx.answerCbQuery();
+
+
+
 ctx.reply(
 "📩 Masukkan email penerima:"
 );
@@ -43,7 +45,12 @@ ctx.reply(
 
 
 
-// pilih register
+
+
+// =======================
+// BUTTON REGISTER
+// =======================
+
 
 bot.action(
 "register",
@@ -54,10 +61,17 @@ let data =
 session[ctx.from.id];
 
 
-if(!data)
+
+if(!data){
+
+
 return ctx.reply(
-"❌ Session tidak ditemukan"
+"❌ Session tidak ditemukan\nGunakan /sendmail dulu"
 );
+
+
+}
+
 
 
 
@@ -70,8 +84,15 @@ saveSession(session);
 
 
 
+await ctx.answerCbQuery();
+
+
+
 ctx.reply(
-"👤 Masukkan Nama Lengkap:"
+`🎉 Template Register dipilih
+
+
+👤 Masukkan Nama Lengkap:`
 );
 
 
@@ -82,7 +103,12 @@ ctx.reply(
 
 
 
-// pilih invoice
+
+
+// =======================
+// BUTTON INVOICE
+// =======================
+
 
 bot.action(
 "invoice",
@@ -93,10 +119,17 @@ let data =
 session[ctx.from.id];
 
 
-if(!data)
+
+if(!data){
+
+
 return ctx.reply(
-"❌ Session tidak ditemukan"
+"❌ Session tidak ditemukan\nGunakan /sendmail dulu"
 );
+
+
+}
+
 
 
 
@@ -109,8 +142,15 @@ saveSession(session);
 
 
 
+await ctx.answerCbQuery();
+
+
+
 ctx.reply(
-"👤 Masukkan Nama Pelanggan:"
+`🧾 Template Invoice dipilih
+
+
+👤 Masukkan Nama Pelanggan:`
 );
 
 
