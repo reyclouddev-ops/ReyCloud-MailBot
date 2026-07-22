@@ -37,8 +37,21 @@ html:data.html
 });
 
 
-let log=
-`${new Date()} | ${data.email} | ${data.subject}\n`;
+let log = `
+
+====================
+TIME : ${new Date()}
+TO   : ${data.email}
+SUBJECT : ${data.subject}
+====================
+
+`;
+
+
+fs.appendFileSync(
+"logs/mail.log",
+log
+);
 
 
 fs.appendFileSync(
