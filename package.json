@@ -1,0 +1,13 @@
+{
+  "name": "rey-mailbot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "nodemailer": "^6.9.13",
+    "telegraf": "^4.16.3"
+  }
+}
