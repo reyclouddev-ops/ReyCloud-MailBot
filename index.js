@@ -93,7 +93,7 @@ source:file
 
 
 
-bot.on("text",async(ctx)=>{
+bot.on("text", async(ctx)=>{
 
 
 let data=session[ctx.from.id];
@@ -102,39 +102,25 @@ if(!data)
 return;
 
 
-
 let text=ctx.message.text;
 
 
 
-if(data.step==="email"){
+// REGISTER
+
+if(data.template==="register"){
 
 
-data.email=text;
-
-data.step="template";
+if(data.step==="nama"){
 
 
-ctx.reply(
-"Pilih template:",
-Markup.inlineKeyboard([
+data.nama=text;
 
-[
-Markup.button.callback(
-"🎉 Register",
-"register"
-)
-],
+data.step="role";
 
-[
-Markup.button.callback(
-"🧾 Invoice",
-"invoice"
-)
-]
 
-])
-
+return ctx.reply(
+"🏷 Masukkan Role / Jabatan:"
 );
 
 
@@ -142,44 +128,194 @@ Markup.button.callback(
 
 
 
-});
+if(data.step==="role"){
 
 
+data.role=text;
+
+data.step="wa";
 
 
-
-bot.action("register",(ctx)=>{
-
-
-let d=session[ctx.from.id];
-
-
-d.template="register";
-
-
-d.step="nama";
-
-
-ctx.reply(
-"Masukkan nama:"
+return ctx.reply(
+"📱 Masukkan WhatsApp:"
 );
 
 
+}
+
+
+
+if(data.step==="wa"){
+
+
+data.wa=text;
+
+
+data.member=
+"LEGION-"+Date.now();
+
+
+data.date=
+new Date()
+.toLocaleDateString("id-ID");
+
+
+
+await sendMail({
+
+email:data.email,
+
+subject:
+"🎉 Registration Successful",
+
+html:
+register(data)
+
 });
 
-
-
-
-bot.action("invoice",(ctx)=>{
 
 
 ctx.reply(
-"Template invoice dipilih"
+`✅ Register berhasil dikirim
+
+📩 ${data.email}
+
+🆔 ${data.member}`
 );
 
 
+
+delete session[ctx.from.id];
+
+}
+
+
+
+}
+
+
+
+
+
+// INVOICE
+
+if(data.template==="invoice"){
+
+
+
+if(data.step==="nama"){
+
+
+data.nama=text;
+
+data.step="produk";
+
+
+return ctx.reply(
+"📦 Masukkan produk:"
+);
+
+
+}
+
+
+
+if(data.step==="produk"){
+
+
+data.produk=text;
+
+data.step="harga";
+
+
+return ctx.reply(
+"💰 Masukkan harga:"
+);
+
+
+}
+
+
+
+if(data.step==="harga"){
+
+
+data.harga=text;
+
+data.step="metode";
+
+
+return ctx.reply(
+"💳 Masukkan metode pembayaran:"
+);
+
+
+}
+
+
+
+if(data.step==="metode"){
+
+
+data.metode=text;
+
+data.step="status";
+
+
+return ctx.reply(
+"📌 Masukkan status pembayaran:"
+);
+
+
+}
+
+
+
+if(data.step==="status"){
+
+
+data.status=text;
+
+
+data.date=
+new Date()
+.toLocaleDateString("id-ID");
+
+
+
+await sendMail({
+
+email:data.email,
+
+subject:
+"🧾 Payment Invoice",
+
+html:
+invoice(data)
+
 });
 
+
+
+ctx.reply(
+`✅ Invoice berhasil dikirim
+
+📩 ${data.email}`
+);
+
+
+
+delete session[ctx.from.id];
+
+
+}
+
+
+
+}
+
+
+});
 
 
 
