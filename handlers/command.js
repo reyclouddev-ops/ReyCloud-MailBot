@@ -68,10 +68,21 @@ Markup.button.callback(
 "📧 Send Mail",
 "sendmail"
 )
+],
+
+[
+Markup.button.callback(
+"🎉 Register",
+"register"
+),
+
+Markup.button.callback(
+"🧾 Invoice",
+"invoice"
+)
 ]
 
 ])
-
 );
 
 
