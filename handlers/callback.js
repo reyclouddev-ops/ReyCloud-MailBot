@@ -40,6 +40,7 @@ data.template="register";
 
 data.step="nama";
 
+saveSession(session);    
 
 
 await ctx.reply(
@@ -72,6 +73,8 @@ return ctx.reply(
 data.template="invoice";
 
 data.step="nama";
+
+saveSession(session);  
 
 
 
