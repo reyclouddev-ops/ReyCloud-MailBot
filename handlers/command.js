@@ -1,78 +1,90 @@
 const {
-Markup
-}=require("telegraf");
+    Markup
+} = require("telegraf");
 
 
 const {
-isOwner
-}=require("../config/owner");
+    saveSession
+} = require("../database/session");
 
 
-const {
-saveSession
-}=require("../database/session");
+const sendMail =
+require("../utils/mailer");
 
 
-const createBackup =
-require("../utils/backup");
+const register =
+require("../templates/register");
+
+
+const invoice =
+require("../templates/invoice");
 
 
 
-const checkCooldown =
-require("../utils/cooldown");
+
+// validasi email
+
+function isEmail(email){
+
+return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+}
+
 
 
 module.exports=(bot,session)=>{
 
 
+bot.on("text", async(ctx)=>{
 
-bot.start((ctx)=>{
+
+let data =
+session[ctx.from.id];
 
 
-ctx.reply(
-`🤖 ReyMail Bot
+// tidak ada session
+if(!data)
+return;
 
-PT Legion Teknologi Mail System
 
-Gunakan:
- /menu`
+
+let text =
+ctx.message.text;
+
+
+
+// =======================
+// STEP EMAIL PENERIMA
+// =======================
+
+
+if(data.step==="email"){
+
+
+if(!isEmail(text)){
+
+
+return ctx.reply(
+"❌ Email tidak valid\n\nContoh:\nuser@gmail.com"
 );
 
 
-});
+}
 
 
 
+data.email=text;
+
+data.step="template";
 
 
-bot.command(
-"menu",
-(ctx)=>{
+saveSession(session);
 
 
-ctx.reply(
-`📩 ReyMail Menu
 
-
-/sendmail
-Kirim email template
-
-
-/backup
-Backup database
-
-
-/status
-Status bot
-`,
+return ctx.reply(
+"📄 Pilih Template Email:",
 Markup.inlineKeyboard([
-
-[
-Markup.button.callback(
-"📧 Send Mail",
-"sendmail"
-)
-],
 
 [
 Markup.button.callback(
@@ -84,108 +96,306 @@ Markup.button.callback(
 "🧾 Invoice",
 "invoice"
 )
+
 ]
 
 ])
+
 );
 
+
+}
+
+
+
+
+
+
+// =======================
+// TEMPLATE REGISTER
+// =======================
+
+
+if(data.template==="register"){
+
+
+
+// nama
+
+if(data.step==="nama"){
+
+
+data.nama=text;
+
+data.step="role";
+
+
+saveSession(session);
+
+
+return ctx.reply(
+"🏷 Masukkan Role / Jabatan:"
+);
+
+
+}
+
+
+
+
+// role
+
+if(data.step==="role"){
+
+
+data.role=text;
+
+data.step="wa";
+
+
+saveSession(session);
+
+
+return ctx.reply(
+"📱 Masukkan WhatsApp:"
+);
+
+
+}
+
+
+
+
+// whatsapp
+
+if(data.step==="wa"){
+
+
+data.wa=text;
+
+
+data.member =
+"LEGION-"+Date.now();
+
+
+data.status="ACTIVE";
+
+
+data.date =
+new Date()
+.toLocaleDateString("id-ID");
+
+
+
+await sendMail({
+
+email:data.email,
+
+subject:
+"🎉 Registration Successful",
+
+html:
+register(data)
 
 });
 
 
 
+ctx.reply(
+`✅ Registration email berhasil dikirim
 
+📩 ${data.email}
 
-bot.command(
-"sendmail",
-(ctx)=>{
-
-
-if(!isOwner(ctx.from.id))
-return ctx.reply(
-"❌ Access Denied"
+🆔 ${data.member}`
 );
 
 
 
-session[ctx.from.id]={
-
-step:"email",
-template:""
-
-};
+delete session[ctx.from.id];
 
 
 saveSession(session);
 
 
 
-ctx.reply(
-"📩 Masukkan email penerima:"
-);
+return;
 
-
-});
+}
 
 
 
+}
 
 
 
-bot.command(
-"backup",
-async(ctx)=>{
 
 
-if(!isOwner(ctx.from.id))
+
+
+// =======================
+// TEMPLATE INVOICE
+// =======================
+
+
+if(data.template==="invoice"){
+
+
+
+// nama pelanggan
+
+if(data.step==="nama"){
+
+
+data.nama=text;
+
+data.step="produk";
+
+
+saveSession(session);
+
+
+
 return ctx.reply(
-"❌ Access Denied"
+"📦 Masukkan Produk:"
 );
+
+
+}
+
+
+
+
+// produk
+
+if(data.step==="produk"){
+
+
+data.produk=text;
+
+data.step="harga";
+
+
+saveSession(session);
+
+
+
+return ctx.reply(
+"💰 Masukkan Harga:"
+);
+
+
+}
+
+
+
+
+// harga
+
+if(data.step==="harga"){
+
+
+data.harga=text;
+
+data.step="metode";
+
+
+saveSession(session);
+
+
+
+return ctx.reply(
+"💳 Masukkan Metode Pembayaran:"
+);
+
+
+}
+
+
+
+
+
+// metode
+
+if(data.step==="metode"){
+
+
+data.metode=text;
+
+data.step="status";
+
+
+saveSession(session);
+
+
+
+return ctx.reply(
+"📌 Masukkan Status Pembayaran:"
+);
+
+
+}
+
+
+
+
+
+// status
+
+if(data.step==="status"){
+
+
+data.status=text;
+
+
+data.date =
+new Date()
+.toLocaleDateString("id-ID");
+
+
+
+await sendMail({
+
+email:data.email,
+
+subject:
+"🧾 Payment Invoice",
+
+html:
+invoice(data)
+
+});
 
 
 
 ctx.reply(
-"⏳ Membuat backup..."
+`✅ Invoice berhasil dikirim
+
+📩 ${data.email}
+
+💳 Status:
+${data.status}`
 );
 
 
 
-let file =
-await createBackup();
+delete session[ctx.from.id];
+
+
+saveSession(session);
 
 
 
-await ctx.replyWithDocument({
-source:file
-});
+return;
+
+}
 
 
 
-});
+}
 
-
-
-
-
-
-bot.command(
-"status",
-(ctx)=>{
-
-
-ctx.reply(
-`🟢 Bot Online
-
-Owner:
-${process.env.OWNER_ID}
-
-System:
-ReyMail Bot`
-);
 
 
 });
-
 
 
 };
